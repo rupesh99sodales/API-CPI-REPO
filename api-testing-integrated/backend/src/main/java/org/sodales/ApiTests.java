@@ -3,6 +3,7 @@ package org.sodales;
 import model.ApiTestCase;
 import reader.ExcelReader;
 import runner.ApiTestRunner;
+import org.sodales.LogCollector;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,13 +35,13 @@ public class ApiTests {
             if (test.skip.equalsIgnoreCase("yes")) {
                 System.out.println("skipping the test " + test.testName);
             } else {
-                System.out.println("Currently Executing: " + test.testName);
+                LogCollector.log("Currently Executing: " + test.testName);
                 ApiTestRunner.run(test);
             }
         }
 
-        System.out.println("Execution of the Test cases has been completed..");
+        LogCollector.log("Execution of the Test cases has been completed..");
         LocalDateTime testcaseexecutionstoptime = LocalDateTime.now();
-        System.out.println("Execution Stop time: " + testcaseexecutionstoptime);
+       LogCollector.log("Execution Stop time: " + testcaseexecutionstoptime);
     }
 }

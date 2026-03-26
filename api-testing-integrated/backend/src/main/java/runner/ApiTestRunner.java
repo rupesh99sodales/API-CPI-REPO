@@ -16,7 +16,7 @@ import org.sodales.GlobalVariableHandler;
 import org.sodales.OAuth2Client;
 import org.sodales.PropertyLoader;
 import org.testng.Assert;
-
+import org.sodales.LogCollector;
 
 public class ApiTestRunner extends OAuth2Client {
    private static String getCsvFile() {
@@ -52,7 +52,7 @@ private static String getExtentHtmlFile() {
                                     : HttpRequest.BodyPublishers.noBody());
             if (PropertyLoader.loadProperties("Authentication_Type").equalsIgnoreCase("OAUTH")) {
                 if (accessToken == null || Instant.now().isAfter(tokenExpiry)) {
-                    System.out.println("Access token missing or expired. Fetching a new one...");
+                    org.sodales.LogCollector.log("Access token missing or expired. Fetching a new one...");
                     getAccessToken();
                 }
                 System.setProperty("Authorization", "Bearer " + accessToken);
@@ -75,11 +75,11 @@ private static String getExtentHtmlFile() {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             // Handle unauthorized (expired token)
             if (response.statusCode() == 401) {
-                System.out.println("Access token expired, attempting refresh...");
+                org.sodales.LogCollector.log("Access token expired, attempting refresh...");
                 if (refreshToken != null) {
                     refreshAccessToken();
                 } else {
-                    System.out.println("No refresh token found. Requesting new access token...");
+                    org.sodales.LogCollector.log("No refresh token found. Requesting new access token...");
                     getAccessToken();
                 }
 

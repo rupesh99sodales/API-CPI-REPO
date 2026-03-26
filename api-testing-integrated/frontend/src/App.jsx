@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import logo from "./assets/logo-sodales-dark.png";
 
 const REQUIRED_COLUMNS = [
@@ -19,6 +19,10 @@ export default function App() {
   const [busy, setBusy] = useState(false);
   const [reportUrl, setReportUrl] = useState("");
   const [showClientSecret, setShowClientSecret] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const [logs, setLogs] = useState([]);
+
+  const fileInputRef = useRef(null);
 
   const [form, setForm] = useState({
     username: "",
@@ -31,8 +35,7 @@ export default function App() {
 
   const canRun = useMemo(() => !!file && !busy, [file, busy]);
 
-  const onFileChange = (event) => {
-    const selected = event.target.files?.[0];
+  const handleSelectedFile = (selected) => {
     setStatus("");
     setReportUrl("");
 
@@ -44,16 +47,69 @@ export default function App() {
     const lower = selected.name.toLowerCase();
     if (!(lower.endsWith(".xlsx") || lower.endsWith(".xls"))) {
       setStatus("Only .xlsx or .xls files are allowed.");
-      event.target.value = "";
       setFile(null);
       return;
     }
 
     setFile(selected);
+    setStatus(`Selected file: ${selected.name}`);
+  };
+
+  const onFileChange = (event) => {
+    const selected = event.target.files?.[0];
+    handleSelectedFile(selected);
+  };
+
+  const handleDrag = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (event.type === "dragenter" || event.type === "dragover") {
+      setDragActive(true);
+    } else if (event.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setDragActive(false);
+
+    const droppedFile = event.dataTransfer.files?.[0];
+    handleSelectedFile(droppedFile);
   };
 
   const updateField = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const pollLogs = () => {
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch("http://localhost:8080/logs");
+        if (!response.ok) {
+          clearInterval(interval);
+          return;
+        }
+
+        const data = await response.json();
+        setLogs(data);
+
+        const joined = data.join(" | ");
+
+        if (
+          joined.includes("Execution of the Test cases has been completed..") ||
+          joined.includes("Execution Stop time:")
+        ) {
+          clearInterval(interval);
+        }
+      } catch (error) {
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    return interval;
   };
 
   const runTests = async () => {
@@ -93,9 +149,12 @@ export default function App() {
     data.append("tokenUrl", form.tokenUrl);
     data.append("grantType", form.grantType || "client_credentials");
 
+    let logInterval;
+
     try {
       setBusy(true);
       setStatus("Running tests...");
+      logInterval = pollLogs();
 
       const response = await fetch("http://localhost:8080/run-tests", {
         method: "POST",
@@ -220,7 +279,29 @@ export default function App() {
 
         <div className="section">
           <label>Excel File</label>
-          <input type="file" accept=".xlsx,.xls" onChange={onFileChange} />
+          <div
+            className={`dropzone ${dragActive ? "active" : ""}`}
+            onDragEnter={handleDrag}
+            onDragOver={handleDrag}
+            onDragLeave={handleDrag}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+            style={{ cursor: "pointer" }}
+          >
+            <p>
+              {file
+                ? `Selected file: ${file.name}`
+                : "Drag & drop your Excel file here, or click to browse"}
+            </p>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".xlsx,.xls"
+              style={{ display: "none" }}
+              onChange={onFileChange}
+            />
+          </div>
           <small>Expected sheet columns: {REQUIRED_COLUMNS.join(", ")}</small>
         </div>
 
@@ -229,6 +310,19 @@ export default function App() {
         </button>
 
         {status ? <div className="status">{status}</div> : null}
+
+        {logs.length > 0 && (
+          <div className="status logsBox">
+            <strong>Execution Logs</strong>
+            <div className="logsList">
+              {logs.map((log, index) => (
+                <div key={index} className="logLine">
+                  • {log}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {reportUrl ? (
           <div className="section">
