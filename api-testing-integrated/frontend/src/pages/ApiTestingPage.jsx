@@ -6,7 +6,10 @@ const REQUIRED_COLUMNS = [
   "Method",
   "URL",
   "Headers",
+  "BodyType",
   "Payload",
+  "FormData",
+  "FilePath",
   "Expected Status",
   "Expected Response",
   "Skip",
@@ -186,148 +189,144 @@ export default function App() {
   };
 
   return (
-      <div className="card">
-        <h1> API Testing Framework CPI</h1>
-        <p className="subtitle">
-          Choose Authentication & Upload your Excel File
-        </p>
+    <div className="card">
+      <h1> API Testing Framework . </h1>
+      <p className="subtitle">Choose Authentication & Upload your Excel File</p>
 
-        <div className="section">
-          <label>Authentication Type</label>
-          <select
-            value={authType}
-            onChange={(e) => setAuthType(e.target.value)}
-          >
-            <option value="BASIC">Basic</option>
-            <option value="OAUTH">OAuth</option>
-          </select>
-        </div>
+      <div className="section">
+        <label>Authentication Type</label>
+        <select value={authType} onChange={(e) => setAuthType(e.target.value)}>
+          <option value="BASIC">Basic</option>
+          <option value="OAUTH">OAuth</option>
+        </select>
+      </div>
 
-        {authType === "BASIC" ? (
-          <div className="grid two">
-            <div>
-              <label>Username</label>
-              <input
-                value={form.username}
-                onChange={(e) => updateField("username", e.target.value)}
-                placeholder="Enter username"
-              />
-            </div>
-            <div>
-              <label>Password</label>
-              <input
-                type="password"
-                value={form.password}
-                onChange={(e) => updateField("password", e.target.value)}
-                placeholder="Enter password"
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="grid two">
-            <div>
-              <label>Token URL</label>
-              <input
-                value={form.tokenUrl}
-                onChange={(e) => updateField("tokenUrl", e.target.value)}
-                placeholder="https://.../token"
-              />
-            </div>
-            <div>
-              <label>Grant Type</label>
-              <input
-                value={form.grantType}
-                onChange={(e) => updateField("grantType", e.target.value)}
-                placeholder="client_credentials"
-                disabled
-              />
-            </div>
-            <div>
-              <label>Client ID</label>
-              <input
-                value={form.clientId}
-                onChange={(e) => updateField("clientId", e.target.value)}
-                placeholder="Enter client id"
-              />
-            </div>
-            <div className="input-wrapper">
-              <label>Client Secret</label>
-
-              <div className="input-field">
-                <input
-                  type={showClientSecret ? "text" : "password"}
-                  value={form.clientSecret}
-                  onChange={(e) => updateField("clientSecret", e.target.value)}
-                  placeholder="Enter client secret"
-                />
-
-                <button
-                  type="button"
-                  className="toggle-btn"
-                  onClick={() => setShowClientSecret((prev) => !prev)}
-                >
-                  {showClientSecret ? "Hide" : "Show"}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="section">
-          <label>Excel File</label>
-          <div
-            className={`dropzone ${dragActive ? "active" : ""}`}
-            onDragEnter={handleDrag}
-            onDragOver={handleDrag}
-            onDragLeave={handleDrag}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
-            style={{ cursor: "pointer" }}
-          >
-            <p>
-              {file
-                ? `Selected file: ${file.name}`
-                : "Drag & drop your Excel file here, or click to browse"}
-            </p>
-
+      {authType === "BASIC" ? (
+        <div className="grid two">
+          <div>
+            <label>Username</label>
             <input
-              ref={fileInputRef}
-              type="file"
-              accept=".xlsx,.xls"
-              style={{ display: "none" }}
-              onChange={onFileChange}
+              value={form.username}
+              onChange={(e) => updateField("username", e.target.value)}
+              placeholder="Enter username"
             />
           </div>
-          <small>Expected sheet columns: {REQUIRED_COLUMNS.join(", ")}</small>
+          <div>
+            <label>Password</label>
+            <input
+              type="password"
+              value={form.password}
+              onChange={(e) => updateField("password", e.target.value)}
+              placeholder="Enter password"
+            />
+          </div>
         </div>
+      ) : (
+        <div className="grid two">
+          <div>
+            <label>Token URL</label>
+            <input
+              value={form.tokenUrl}
+              onChange={(e) => updateField("tokenUrl", e.target.value)}
+              placeholder="https://.../token"
+            />
+          </div>
+          <div>
+            <label>Grant Type</label>
+            <input
+              value={form.grantType}
+              onChange={(e) => updateField("grantType", e.target.value)}
+              placeholder="client_credentials"
+              disabled
+            />
+          </div>
+          <div>
+            <label>Client ID</label>
+            <input
+              value={form.clientId}
+              onChange={(e) => updateField("clientId", e.target.value)}
+              placeholder="Enter client id"
+            />
+          </div>
+          <div className="input-wrapper">
+            <label>Client Secret</label>
 
-        <button className="runBtn" disabled={!canRun} onClick={runTests}>
-          {busy ? "Running..." : "Run Tests"}
-        </button>
+            <div className="input-field">
+              <input
+                type={showClientSecret ? "text" : "password"}
+                value={form.clientSecret}
+                onChange={(e) => updateField("clientSecret", e.target.value)}
+                placeholder="Enter client secret"
+              />
 
-        {status ? <div className="status">{status}</div> : null}
-
-        {logs.length > 0 && (
-          <div className="status logsBox">
-            <strong>Execution Logs</strong>
-            <div className="logsList">
-              {logs.map((log, index) => (
-                <div key={index} className="logLine">
-                  • {log}
-                </div>
-              ))}
+              <button
+                type="button"
+                className="toggle-btn"
+                onClick={() => setShowClientSecret((prev) => !prev)}
+              >
+                {showClientSecret ? "Hide" : "Show"}
+              </button>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {reportUrl ? (
-          <div className="section">
-            <a href={reportUrl} target="_blank" rel="noreferrer">
-              Download generated report
-            </a>
-          </div>
-        ) : null}
+      <div className="section">
+        <label>Excel File</label>
+        <div
+          className={`dropzone ${dragActive ? "active" : ""}`}
+          onDragEnter={handleDrag}
+          onDragOver={handleDrag}
+          onDragLeave={handleDrag}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+          style={{ cursor: "pointer" }}
+        >
+          <p>
+            {file
+              ? `Selected file: ${file.name}`
+              : "Drag & drop your Excel file here, or click to browse"}
+          </p>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xlsx,.xls"
+            style={{ display: "none" }}
+            onChange={onFileChange}
+          />
+        </div>
+        <small>
+          <b>Expected sheet columns: </b> {REQUIRED_COLUMNS.join(", ")}
+        </small>
       </div>
-   
+
+      <button className="runBtn" disabled={!canRun} onClick={runTests}>
+        {busy ? "Running..." : "Run Tests"}
+      </button>
+
+      {status ? <div className="status">{status}</div> : null}
+
+      {logs.length > 0 && (
+        <div className="status logsBox">
+          <strong>Execution Logs</strong>
+          <div className="logsList">
+            {logs.map((log, index) => (
+              <div key={index} className="logLine">
+                • {log}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {reportUrl ? (
+        <div className="section">
+          <a href={reportUrl} target="_blank" rel="noreferrer">
+            Download generated report
+          </a>
+        </div>
+      ) : null}
+    </div>
   );
 }

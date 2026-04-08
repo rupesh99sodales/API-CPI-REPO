@@ -10,7 +10,7 @@ export default function MainLayout() {
           <div className="header">
             <img src={logo} alt="Logo" className="logo" />
           </div>
-          <span className="nav-title">QA Tools </span>
+          <span className="nav-title">QA Utilities For Testing </span>
         </div>
 
         <nav className="nav-right">
