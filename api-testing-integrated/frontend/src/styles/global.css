@@ -23,7 +23,6 @@ body {
   border-radius: 18px;
   padding: 24px;
   box-shadow: 0 10px 30px rgba(209, 14, 14, 0.08);
-
   margin: 180px auto 20px auto;
 }
 h1 {
@@ -177,7 +176,7 @@ small {
   justify-content: space-between;
   align-items: center;
   padding: 14px 24px;
-  background-color: #025a6d;
+  background-color: #094a59;
   color: white;
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(207, 72, 72, 0.1);

@@ -24,7 +24,7 @@ export default function MainLayout() {
           </NavLink>
 
           <NavLink
-            to="/reports"
+            to="/future1"
             className={({ isActive }) =>
               `navTab ${isActive ? "navTabActive" : ""}`
             }
@@ -33,7 +33,7 @@ export default function MainLayout() {
           </NavLink>
 
           <NavLink
-            to="/settings"
+            to="/future2"
             className={({ isActive }) =>
               `navTab ${isActive ? "navTabActive" : ""}`
             }

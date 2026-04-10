@@ -11,8 +11,8 @@ export default function AppRoutes() {
       <Route path="/" element={<MainLayout />}>
         <Route index element={<ApiTestingPage />} />
         <Route path="api-testing" element={<ApiTestingPage />} />
-        {/* <Route path="reports" element={<ReportsPage />} />
-        <Route path="settings" element={<SettingsPage />} /> */}
+        {/* <Route path="future1" element={<ReportsPage />} />
+        <Route path="future2" element={<SettingsPage />} /> */}
       </Route>
 
       {/* <Route path="*" element={<NotFoundPage />} /> */}
