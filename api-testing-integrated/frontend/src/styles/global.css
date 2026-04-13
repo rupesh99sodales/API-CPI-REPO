@@ -9,6 +9,100 @@
 body {
   margin: 0;
 }
+.pageWithActions {
+  width: 100%;
+}
+
+.topActionsBar {
+  width: 90%;
+  max-width: 1000px;
+  margin: 160px auto 8px auto;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.documentsBtn {
+  background: #ffffff;
+  color: #013e4c;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.documentsBtn:hover {
+  background: #f3f4f6;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modalCard {
+  width: 90%;
+  max-width: 700px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.modalHeader h2 {
+  margin: 0;
+}
+
+.closeModalBtn {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.documentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.documentRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: #f9fafb;
+}
+
+.downloadDocBtn {
+  text-decoration: none;
+  background: #013e4c;
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.downloadDocBtn:hover {
+  background: #0b5567;
+}
 .page {
   min-height: 100vh;
   display: flex;
@@ -23,7 +117,7 @@ body {
   border-radius: 18px;
   padding: 24px;
   box-shadow: 0 10px 30px rgba(209, 14, 14, 0.08);
-  margin: 180px auto 20px auto;
+  margin: 0px auto 20px auto;
 }
 h1 {
   margin: 0 0 8px;

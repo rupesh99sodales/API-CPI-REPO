@@ -15,6 +15,24 @@ const REQUIRED_COLUMNS = [
   "Skip",
 ];
 
+const API_TESTING_DOCUMENTS = [
+  {
+    name: "API Testing Excel Template",
+    url: "/docs/api-testing-template.xlsx",
+    // available: false,
+  },
+  {
+    name: "API TEST PDF",
+    url: "/docs/Rupesh_Rane_QA_Resume 2026.pdf",
+    // available: true,
+  },
+  {
+    name: "API Testing Process Document",
+    url: "/docs/api-testing-process.docx",
+    // available: true,
+  },
+];
+
 export default function App() {
   const [authType, setAuthType] = useState("BASIC");
   const [file, setFile] = useState(null);
@@ -24,6 +42,7 @@ export default function App() {
   const [showClientSecret, setShowClientSecret] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [logs, setLogs] = useState([]);
+  const [showDocsModal, setShowDocsModal] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -114,6 +133,45 @@ export default function App() {
 
     return interval;
   };
+const handleDocumentDownload = async (doc) => {
+  try {
+    const fileUrl = `${window.location.origin}${doc.url}`;
+    const response = await fetch(fileUrl, { cache: "no-store" });
+
+    if (!response.ok) {
+      setStatus(`Document not found: ${doc.name} (${response.status})`);
+      return;
+    }
+
+    const contentType = response.headers.get("content-type") || "";
+
+    // Block HTML fallback pages
+    if (contentType.includes("text/html")) {
+      setStatus(`Document path is wrong or file is missing: ${doc.name}`);
+      return;
+    }
+
+    const blob = await response.blob();
+
+    if (!blob || blob.size === 0) {
+      setStatus(`Document is empty or unavailable: ${doc.name}`);
+      return;
+    }
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = doc.url.split("/").pop() || doc.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+
+    setStatus(`Document downloaded: ${doc.name}`);
+  } catch (error) {
+    setStatus(`Unable to download document: ${doc.name}`);
+  }
+};
 
   const runTests = async () => {
     setStatus("");
@@ -189,6 +247,12 @@ export default function App() {
   };
 
   return (
+    <div className="pageWithActions">
+      <div className="topActionsBar">
+        <button className="documentsBtn" onClick={() => setShowDocsModal(true)}>
+          Documents
+        </button>
+      </div>
     <div className="card">
       <h1> API Testing Framework . </h1>
       <p className="subtitle">Choose Authentication & Upload your Excel File</p>
@@ -328,5 +392,37 @@ export default function App() {
         </div>
       ) : null}
     </div>
+    {showDocsModal && (
+        <div className="modalOverlay" onClick={() => setShowDocsModal(false)}>
+          <div className="modalCard" onClick={(e) => e.stopPropagation()}>
+            <div className="modalHeader">
+              <h2>API Testing Documents</h2>
+              <button
+                className="closeModalBtn"
+                onClick={() => setShowDocsModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="documentsList">
+              {API_TESTING_DOCUMENTS.map((doc, index) => (
+                <div className="documentRow" key={index}>
+                  <span>{doc.name}</span>
+                  <button
+                    type="button"
+                    className="downloadDocBtn"
+                    // disabled={!doc.available}
+                    onClick={() => handleDocumentDownload(doc)}
+                  >
+                    Download
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+      </div>
   );
 }
